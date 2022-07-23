@@ -26,7 +26,7 @@ def Get_Sallary():
         outfile.write(res.text)
         outfile.close()
 
-    #scraping Data
+    #scraping Data Jobstreet
     soup = BeautifulSoup(res.text, 'html.parser')
     result = soup.find_all('div', class_='sx2jih0 zcydq8n lmSnC_0')
 
