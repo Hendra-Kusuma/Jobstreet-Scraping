@@ -28,15 +28,15 @@ def Get_Sallary():
 
     #scraping Data
     soup = BeautifulSoup(res.text, 'html.parser')
-    result = soup.find_all('div', 'sx2jih0 zcydq8n lmSnC_0')
+    result = soup.find_all('div', class_='sx2jih0 zcydq8n lmSnC_0')
 
     job_list = []
     for item in result:
-        title = item.find_all('div', 'sx2jih0')[0].text
-        location = item.find_all('span', 'sx2jih0')[2].text
-        company = item.find_all('span', 'sx2jih0')[1].text
+        title = item.find_all('div', class_='sx2jih0')[0].text
+        location = item.find_all('span', class_='sx2jih0')[2].text
+        company = item.find_all('span', class_='sx2jih0')[1].text
         try :
-            sallary = item.find_all('span', 'sx2jih0 zcydq84u _18qlyvc0 _18qlyvc1x _18qlyvc3 _18qlyvc7')[1].text
+            sallary = item.find_all('span', class_='sx2jih0 zcydq84u _18qlyvc0 _18qlyvc1x _18qlyvc3 _18qlyvc7')[1].text
         except IndexError:
             sallary = 'no sallary information'
 
