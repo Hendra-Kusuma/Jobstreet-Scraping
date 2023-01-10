@@ -1,3 +1,5 @@
+import selectors
+
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -18,6 +20,7 @@ headers = {
 
 def Get_Total_Page(query, location):
     url = (f'https://www.jobstreet.co.id/id/job-search/{query}-jobs-in-{location}/')
+    # url = (f'https://www.jobstreet.co.id/id/job-search/laravel-jobs-in-bandung/1/')
 
     params = {
         'query': query,
@@ -30,7 +33,7 @@ def Get_Total_Page(query, location):
     except FileExistsError:
         pass
 
-    with open('temp/res.html', 'w+') as outfile:
+    with open('temp/res.html', 'w+', encoding='utf-8') as outfile:
         outfile.write(res.text)
         outfile.close()
 
@@ -48,6 +51,7 @@ def Get_Total_Page(query, location):
         total_pages = 1
 
     return total_pages
+
 
 
 def Get_All_Item(query, location, counter):
@@ -68,18 +72,18 @@ def Get_All_Item(query, location, counter):
 
     # scraping Data Jobstreet
     soup = BeautifulSoup(res.text, 'html.parser')
-    result = soup.find_all('div', class_='sx2jih0 zcydq8n lmSnC_0')
+    result = soup.find('div', attrs={'data-automation':'jobListing'})
+    # result = soup.find_all('div', attrs={'class': 'sx2jih0'})
 
     job_list = []
     for item in result:
-        title = item.find_all('div', class_='sx2jih0')[0].text
-        location = item.find_all('span', class_='sx2jih0')[2].text
-        company = item.find_all('span', class_='sx2jih0')[1].text
+        title = item.find('div', class_='sx2jih0 l3gun70 l3gun74 l3gun72').text
+        location = item.find('span', class_='sx2jih0 zcydq84u es8sxo0 es8sxo3 es8sxo21 es8sxoh').text
+        company = item.find('span', attrs={'class':'sx2jih0 iwjz4h1 zcydq84u zcydq80 zcydq8r'}).text
         try:
-            sallary = item.find_all('span', class_='sx2jih0 zcydq84u _18qlyvc0 _18qlyvc1x _18qlyvc3 _18qlyvc7')[1].text
+            sallary = item.select('.sx2jih0 > .es8sxoh')[2].text
         except IndexError:
             sallary = 'no sallary information'
-
 
     # Sorting Data
         data_dict = {
@@ -97,7 +101,7 @@ def Get_All_Item(query, location, counter):
     except FileExistsError:
         pass
 
-        with open(f'json_result/{query}_in_{location}_page_{counter}.json', 'w+') as json_data:
+        with open(f'json_result/{query}_in_{location}_page_{counter}.json', 'w') as json_data:
             json.dump(job_list, json_data)
     print(f'json page {counter} created')
 
@@ -130,7 +134,6 @@ def Run():
     for counter in range(total):
         counter += 1
         try:
-            dynamic_url = (f'https://www.jobstreet.co.id/id/job-search/{query}-jobs-in-{location}/{counter}/')
             Get_All_Item(query, location, counter)
         except ValueError :
             pass
@@ -142,7 +145,7 @@ def Run():
     except FileExistsError:
         pass
 
-    with open(f'reports/.json.format{query}', 'w+') as final_data:
+    with open(f'reports/{query}.json', 'w+') as final_data:
         json.dump(final_result, final_data)
 
     print('Data Json Created')
@@ -151,5 +154,3 @@ def Run():
 
 if __name__ == '__main__':
     Run()
-
-# item to scrape is : Title, Sallary, Company, Location
